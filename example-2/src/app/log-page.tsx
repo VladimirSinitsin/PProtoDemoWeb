@@ -1,38 +1,29 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
-import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useTestService } from "./commands";
 import { DatePicker } from 'antd';
-import type { RangePickerProps } from 'antd/es/date-picker';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { PprotoError } from "../pproto/pproto";
-import DataTable from "react-data-table-component";
-import {TableColumn} from "react-data-table-component/dist/src/DataTable/types";
+import DataTable, { TableColumn, ExpanderComponentProps } from 'react-data-table-component';
 
 import './styles.Module.scss';
 
 export const LogPage = () => {
-    const status = usePprotoStatus();
-    const test = useTestService();
-    const [answer, setAnswer] = useState("");
-
-    const [checkedByPeriod, setCheckedByPeriod] = useState(true);
-    const [checkedByKey, setCheckedByKey] = useState(false);
-
-    const [ percentValue, setPercentValue ] = useState(80);
-
-    const [ text, setText ] = useState("");
-
     // Таблица
     // Данные
-    const data = [
-        {
+    const data: DataRow[] = [
+            {
             id: 1,
             date: "2022-12-19",
-            userId: 1,
-            userName: "Олег",
-            description: "Нарушение при открытой печи"
+            userId: 12345678901234567890,
+            userName: "Синицин Владимир Владимирович",
+            description: "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
+                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
+                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
+                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
+                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
+                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
+                "Нарушение при открытой печи Нарушение при открытой печи "
         },
         {
             id: 2,
@@ -57,223 +48,137 @@ export const LogPage = () => {
         }
     ];
     // Столбцы
-    const columns = [
+    type DataRow = {
+        id: number,
+        date: string,
+        userId: number,
+        userName: string,
+        description: string
+    };
+
+    const columns: TableColumn<DataRow>[] = [
         {
             name: "Дата",
-            selector: "date",
-            sortable: true
+            selector: row => row.date,
+            sortable: true,
+            width: "8rem"
         },
         {
             name: "Код пользователя",
-            selector: "userId",
-            sortable: true
+            selector: row => row.userId,
+            sortable: true,
+            width: "12rem"
         },
         {
             name: "Имя пользователя",
-            selector: "userName",
-            sortable: true
+            selector: row => row.userName,
+            sortable: true,
+            width: "20rem"
         },
         {
             name: "Описание",
-            selector: "description",
-            sortable: true
+            selector: row => row.description,
+            sortable: true,
+            width: "40rem"
         }
     ];
-    
 
-    const LoadBar = ({ text="Загрузка видео", percent = 40 }) => {
-        const style = {
-            width: `${percent}%`
-        }
+    // Настройки таблицы
+    const ExpandableRowComponent: React.FC<ExpanderComponentProps<DataRow>> = ({ data }) => {
         return (
-            <div className="percent-bar-container">
-                <p>{text}</p>
-                <div className="percent-bar">
-                    <div style={ style }></div>
-                </div>
-            </div>
+            <>
+                <div className="expandableRowText"><b>ID:</b> {data.id}</div>
+                <div className="expandableRowText"><b>Дата:</b> {data.date}</div>
+                <div className="expandableRowText"><b>Код пользователя:</b> {data.userId}</div>
+                <div className="expandableRowText"><b>Имя пользователя:</b> {data.userName}</div>
+                <div className="expandableRowText"><b>Описание:</b> {data.description}</div>
+            </>
         );
-    }
+    };
 
-    const handleCheckedByKey = () => {
-        setCheckedByKey(true);
-        setCheckedByPeriod(false);
-    }
 
-    const handleCheckedByPeriod = () => {
-        setCheckedByPeriod(true);
-        setCheckedByKey(false);
-    }
-
-    const handleInput = (event) => {
-        setText(event.target.value);
-        // console.log(event.target.value);
-    }
+    const status = usePprotoStatus();
+    const test = useTestService();
+    const [answer, setAnswer] = useState("");
 
     // ----------
     return (
-        <Root>
-            <Table>
-                <Status>
+        <div className="root">
+            <div className="table">
+                <div className="Status">
                     Статус: {status === "connected" ? "Подключено" : "Отключено"}
-                </Status>
-                <ResultTable>
+                </div>
+                <div className="resultTable">
                     <DataTable
+                        className="dataTables_wrapper"
                         columns={columns}
                         data={data}
-                        defaultSortField="date"
-                        pagination
+                        defaultSortFieldId="date"
+                        // pagination
+                        // dense
+                        fixedHeaderScrollHeight="90%"
+                        responsive
+                        subHeaderWrap
+                        fixedHeader={true}
+                        expandableRows
+                        expandableRowsComponent={ExpandableRowComponent}
                     />
-                </ResultTable>
-            </Table>
-            <Panel>
-                <Text>События</Text>
-                <div className="container">
-                    <Radio>
-                        <RadioButton
-                            type="radio"
-                            name="address"
-                            checked={checkedByPeriod}
-                            onClick={() => handleCheckedByPeriod()}
-                        />
-                        <Text>Поиск событий за период</Text>
-                    </Radio>
-                    <Radio>
-                        <RadioButton
-                            type="radio"
-                            name="address"
-                            checked={checkedByKey}
-                            onClick={() => handleCheckedByKey()}
-                        />
-                        <Text>Поиск события по ключу</Text>
-                    </Radio>
                 </div>
+            </div>
+            <div className="panelJournal">
                 <div className="container">
-                    { checkedByPeriod &&
-                        <>
-                            <div className="flex-row-50">
-                                <Radio>
-                                        <RadioButton
-                                        type="radio"
-                                        name="address"
-                                        checked={false}
-                                        onClick={() => alert("abobe")}
-                                    />
-                                    <Text>Период</Text>
-                                </Radio>
-                                <select className="select" name="" id="">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                </select>
-                            </div>
-                            <Radio>
-                                <RadioButton
+                    <div className="flex-row-50">
+                        <div className="radio">
+                            <input className="radioButton"
                                 type="radio"
                                 name="address"
                                 checked={false}
                                 onClick={() => alert("abobe")}
-                                />
-                                <Text>Указать вручную</Text>
-                            </Radio>
-                            <div className="flex-row-50">
-                                <Text>Начало</Text>
-                                <DatePicker
-                                    format="YYYY-MM-DD HH:mm:ss"
-                                    placeholder="Выберите дату"
-                                    showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
-                                />
-                            </div>
-                            <div className="flex-row-50">
-                                <Text>Окончание</Text>
-                                <DatePicker
-                                    format="YYYY-MM-DD HH:mm:ss"
-                                    placeholder="Выберите дату"
-                                    showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
-                                />
-                            </div>
-                        </>
-                    }
-                    { checkedByKey &&
-                        <>
-                            <Text>Код события</Text>
-                            <input
-                                onChange={handleInput}
-                                />
-                        </>
-                    }
+                            />
+                            <div className="text">Период</div>
+                        </div>
+                        <select className="select" name="" id="">
+                            <option value="1">1 час</option>
+                            <option value="4">4 часа</option>
+                            <option value="8">8 часов</option>
+                            <option value="12">12 часов</option>
+                            <option value="24">24 часа</option>
+                        </select>
+                    </div>
+                    <div className="radio">
+                        <input className="radioButton"
+                            type="radio"
+                            name="address"
+                            checked={false}
+                            onClick={() => alert("abobe")}
+                        />
+                        <div className="text">Указать вручную</div>
+                    </div>
+                    <div className="flex-row-50">
+                        <div className="text-start-end">Начало</div>
+                        <DatePicker
+                            format="YYYY-MM-DD HH:mm:ss"
+                            placeholder="Выберите дату"
+                            showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
+                            size="small"
+                        />
+                    </div>
+                    <div className="flex-row-50">
+                        <div  className="text-start-end">Окончание</div>
+                        <DatePicker
+                            format="YYYY-MM-DD HH:mm:ss"
+                            placeholder="Выберите дату"
+                            showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
+                            size="small"
+                        />
+                    </div>
                 </div>
                 <div className="flex-column">
                     <button className="styled-button">Показать</button>
                     <button className="styled-button">Очистить</button>
                     <button className="styled-button">Экспорт файл</button>
                 </div>
-                <LoadBar
-                    text={"Загрузка видео"}
-                    percent={percentValue}
-                />
-                <button className="styled-button">Показать видео</button>
-            </Panel>
-        </Root>
+            </div>
+        </div>
     );
 };
-
-const ContainerRow = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-`;
-
-const RadioButton = styled.input`
-    margin: 0;
-`;
-
-const Radio = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    column-gap: 8px;
-`;
-
-const Text = styled.p`
-    margin: 0;
-`;
-
-const Table = styled.div`
-    width: 70%;
-`;
-
-const Panel = styled.div`
-    border: 1px solid black;
-    border-radius: 10px;
-    width: 30%;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-`;
-
-const Root = styled.div`
-  padding: 8px;
-  display: flex;
-  flex-direction: row;
-  column-gap: 40px;
-  width: 100%;
-  max-width: 1200px;
-  min-height: 500px;
-`;
-
-const Status = styled.div`
-  margin-bottom: 16px;
-`;
-
-const CommandButton = styled.button`
-  display: block;
-  margin-bottom: 8px;
-`;
-
-const ResultTable = styled.div`
-  display: block;
-  resize: none;
-  width: 100%;
-`;

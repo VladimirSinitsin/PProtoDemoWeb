@@ -1,3 +1,77 @@
+.root {
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    column-gap: 40px;
+    width: 100%;
+    max-width: 97%;
+    min-height: 900px;
+}
+
+.table {
+    width: 80%;
+}
+
+.dataTables_wrapper .rdt_TableCell{
+    font-size:14px;
+    max-height: 500px;
+}
+
+.expandableRowText{
+    margin: 0;
+    font-size: 14px;
+}
+
+.resultTable {
+    display: block;
+    resize: none;
+    width: 100%;
+}
+
+.status {
+    margin-bottom: 16px;
+}
+
+.radio {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 8px;
+}
+
+.radioButton {
+    margin: 0;
+}
+
+.text {
+    margin: 0;
+}
+
+.text-start-end {
+    margin: 0;
+    font-size: 15px;
+}
+
+.panelJournal {
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 20%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    max-height: 220px;
+}
+
+.panelArchive {
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 20%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    max-height: 450px;
+}
+
 .container {
     border: 0.5px solid #ebebeb;
     padding: 10px;
