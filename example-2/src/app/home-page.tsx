@@ -61,14 +61,44 @@ export const HomePage = () => {
 
   // -------------
 
+  // EventLogTests
+
+  const sendEventLog = async () => {
+    setAnswer("Loading...");
+    try {
+      const r = await test.sendEventLog();
+      setAnswer(JSON.stringify(r, null, 4));
+    } catch (e) {
+      setAnswer(`${e}`);
+    }
+  };
+
+  const sendEventLog2 = async () => {
+    setAnswer("Loading...");
+    try {
+      await test.sendEventLog2();
+    } catch (e) {
+      setAnswer(JSON.stringify(e, null, 4));
+    }
+  };
+
+  useEffect(() => {
+    const sub = test.onEventLog((e) => {
+      setAnswer(JSON.stringify(e, null, 4));
+    });
+    return () => sub.unsubscribe();
+  });
+
+  // -------------
+
   return (
     <Root>
       <Status>
         Статус: {status === "connected" ? "Подключено" : "Отключено"}
       </Status>
-      <CommandButton onClick={sendHello}>Send hello</CommandButton>
+      <CommandButton onClick={sendEventLog}>Send hello</CommandButton>
       <CommandButton onClick={sendError}>Send error</CommandButton>
-      <CommandButton onClick={sendEvent}>Send event</CommandButton>
+      <CommandButton onClick={sendEventLog2}>Send event</CommandButton>
       <label>
         Ответ от сервера
         <ResultTextArea readOnly value={answer} />

@@ -2,7 +2,7 @@ const net = require('net');
 const WebSocket = require( "ws");
 const {v4: uuid} = require('uuid');
 
-const ORIGIN_PORT = process.env['ORIGIN_PORT'] || 28052;
+const ORIGIN_PORT = process.env['ORIGIN_PORT'] || 28053;
 const ORIGIN_HOST = process.env['ORIGIN_HOST'] || '178.57.125.54';
 const PROXY_PORT = process.env['PROXY_PORT'] || 9000;
 const PROXY_HOST = process.env['PROXY_HOST'] || 'localhost';
