@@ -1,7 +1,7 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
 import { SetStateAction, useEffect, useState} from "react";
 import {useTestService} from "./commands";
-import {DatePicker} from 'antd';
+import {DatePicker, DatePickerProps} from 'antd';
 import dayjs from 'dayjs';
 import {PprotoError} from "../pproto/pproto";
 import DataTable, {ExpanderComponentProps, TableColumn} from "react-data-table-component";
@@ -83,6 +83,9 @@ export const ArchivePage = () => {
         }
     ];
 
+    const [dataFrame, setDataFrame] = useState<DataRow[]>([]);
+    //-------------
+
     // Настройки таблицы
     const ExpandableRowComponent: React.FC<ExpanderComponentProps<DataRow>> = ({data}) => {
         return (
@@ -99,10 +102,9 @@ export const ArchivePage = () => {
 
     const status = usePprotoStatus();
     const test = useTestService();
-    const [answer, setAnswer] = useState("");
 
-    const [checkedByPeriod, setCheckedByPeriod] = useState(true);
-    const [checkedByKey, setCheckedByKey] = useState(false);
+    const [checkedEventsByPeriod, setCheckedEventsByPeriod] = useState(true);
+    const [checkedEventsByKey, setCheckedEventsByKey] = useState(false);
 
     const [percentValue, setPercentValue] = useState(80);
 
@@ -122,14 +124,15 @@ export const ArchivePage = () => {
         );
     }
 
-    const handleCheckedByKey = () => {
-        setCheckedByKey(true);
-        setCheckedByPeriod(false);
+    const handleCheckedEventsByKey = () => {
+        setCheckedEventsByKey(true);
+        setCheckedEventsByPeriod(false);
     }
 
-    const handleCheckedByPeriod = () => {
-        setCheckedByPeriod(true);
-        setCheckedByKey(false);
+    const handleCheckedEventsByPeriod = () => {
+        setCheckedEventsByKey(false);
+        setCheckedEventsByPeriod(true);
+        alert(checkedEventsByPeriod)
     }
 
     const handleInput = (event: { target: { value: SetStateAction<string>; }; }) => {
@@ -137,7 +140,54 @@ export const ArchivePage = () => {
         // console.log(event.target.value);
     }
 
-    // ----------
+    // Период и Указать вручную radioButton
+    const [checkedByPeriod, setCheckedByPeriod] = useState(true);
+    const [checkedByManual, setCheckedByManual] = useState(false);
+
+    const handleCheckedByManual = () => {
+        setCheckedByManual(true);
+        setCheckedByPeriod(false);
+    }
+
+    const handleCheckedByPeriod = () => {
+        setCheckedByManual(false);
+        setCheckedByPeriod(true);
+    }
+    // ------------------------------------
+
+    // Период select
+    const [periodValue, setPeriodValue] = useState("1");
+
+    const handlePeriodValue = (event: { target: { value: SetStateAction<string>; }; }) => {
+        setPeriodValue(event.target.value);
+    }
+    //-------------------
+
+    // Указать вручную DatePicker
+    const [manualBeginValue, setManualBeginValue] = useState<Date>(new Date());
+    const handleManualBeginValue: DatePickerProps["onChange"] = (date, dateString) => {
+        setManualBeginValue(new Date(dateString));
+    };
+
+    const [manualEndValue, setManualEndValue] = useState<Date>(new Date());
+    const handleManualEndValue: DatePickerProps["onChange"] = (date, dateString) => {
+        setManualEndValue(new Date(dateString));
+    };
+    // --------------------------
+
+
+    // Показать
+    const showTableDataFrame = async () => {
+        setDataFrame(data)
+    }
+    // --------
+
+    // Очистить
+    const clearTableDataFrame = () => {
+        setDataFrame([])
+    }
+    // --------
+
     return (
         <div className="root">
             <div className="table">
@@ -148,7 +198,7 @@ export const ArchivePage = () => {
                     <DataTable
                         className="dataTables_wrapper"
                         columns={columns}
-                        data={data}
+                        data={dataFrame}
                         defaultSortFieldId="date"
                         // pagination
                         // dense
@@ -164,54 +214,52 @@ export const ArchivePage = () => {
             <div className="panelArchive">
                 <div className="text">События</div>
                 <div className="container">
-                    <div className="radio">
+                    <div className="radio" onClick={() => handleCheckedEventsByPeriod()}>
                         <input className="radioButton"
                                type="radio"
                                name="address"
-                               checked={checkedByPeriod}
-                               onClick={() => handleCheckedByPeriod()}
+                               checked={checkedEventsByPeriod}
                         />
-                        <div className="text">Поиск событий за период</div>
+                        <div className="textRadioButton">Поиск событий за период</div>
                     </div>
-                    <div className="radio">
+                    <div className="radio" onClick={() => handleCheckedEventsByKey()}>
                         <input className="radioButton"
                                type="radio"
                                name="address"
-                               checked={checkedByKey}
-                               onClick={() => handleCheckedByKey()}
+                               checked={checkedEventsByKey}
                         />
-                        <div className="text">Поиск события по ключу</div>
+                        <div className="textRadioButton">Поиск события по ключу</div>
                     </div>
                 </div>
                 <div className="container">
-                    { checkedByPeriod &&
+                    { checkedEventsByPeriod &&
                         <>
                             <div className="flex-row-50">
-                                <div className="radio">
+                                <div className="radio" onClick={() => handleCheckedByPeriod()}>
                                     <input className="radioButton"
                                            type="radio"
                                            name="address"
-                                           checked={false}
-                                           onClick={() => alert("abobe")}
+                                           checked={checkedByPeriod}
                                     />
-                                    <div className="text">Период</div>
+                                    <div className="textRadioButton">Период</div>
                                 </div>
-                                <select className="select" name="" id="">
+                                <select className="select" name="" id="" onChange={ e => handlePeriodValue(e)}>
                                     <option value="1">1 час</option>
                                     <option value="4">4 часа</option>
                                     <option value="8">8 часов</option>
                                     <option value="12">12 часов</option>
                                     <option value="24">24 часа</option>
+                                    <option value="168">1 неделя</option>  // 24 * 7
+                                    <option value="744">1 месяц</option>  // 24 * 31
                                 </select>
                             </div>
-                            <div className="radio">
+                            <div className="radio" onClick={() => handleCheckedByManual()}>
                                 <input className="radioButton"
                                        type="radio"
                                        name="address"
-                                       checked={false}
-                                       onClick={() => alert("abobe")}
+                                       checked={checkedByManual}
                                 />
-                                <div className="text">Указать вручную</div>
+                                <div className="textRadioButton">Указать вручную</div>
                             </div>
                             <div className="flex-row-50">
                                 <div className="text">Начало</div>
@@ -220,6 +268,7 @@ export const ArchivePage = () => {
                                     placeholder="Выберите дату"
                                     showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
                                     size="small"
+                                    onChange={handleManualBeginValue}
                                 />
                             </div>
                             <div className="flex-row-50">
@@ -229,11 +278,12 @@ export const ArchivePage = () => {
                                     placeholder="Выберите дату"
                                     showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
                                     size="small"
+                                    onChange={handleManualEndValue}
                                 />
                             </div>
                         </>
                     }
-                    { checkedByKey &&
+                    { checkedEventsByKey &&
                         <>
                             <div className="text">Код события</div>
                             <input
@@ -243,8 +293,8 @@ export const ArchivePage = () => {
                     }
                 </div>
                 <div className="flex-column">
-                    <button className="styled-button">Показать</button>
-                    <button className="styled-button">Очистить</button>
+                    <button className="styled-button" onClick={() => showTableDataFrame()}>Показать</button>
+                    <button className="styled-button" onClick={() => clearTableDataFrame()}>Очистить</button>
                     <button className="styled-button">Экспорт файл</button>
                 </div>
                 <LoadBar
