@@ -132,7 +132,7 @@ export const ArchivePage = () => {
     const handleCheckedEventsByPeriod = () => {
         setCheckedEventsByKey(false);
         setCheckedEventsByPeriod(true);
-        alert(checkedEventsByPeriod)
+        // alert(checkedEventsByPeriod)
     }
 
     const handleInput = (event: { target: { value: SetStateAction<string>; }; }) => {
@@ -217,7 +217,6 @@ export const ArchivePage = () => {
                     <div className="radio" onClick={() => handleCheckedEventsByPeriod()}>
                         <input className="radioButton"
                                type="radio"
-                               name="address"
                                checked={checkedEventsByPeriod}
                         />
                         <div className="textRadioButton">Поиск событий за период</div>
@@ -225,7 +224,6 @@ export const ArchivePage = () => {
                     <div className="radio" onClick={() => handleCheckedEventsByKey()}>
                         <input className="radioButton"
                                type="radio"
-                               name="address"
                                checked={checkedEventsByKey}
                         />
                         <div className="textRadioButton">Поиск события по ключу</div>
@@ -238,7 +236,6 @@ export const ArchivePage = () => {
                                 <div className="radio" onClick={() => handleCheckedByPeriod()}>
                                     <input className="radioButton"
                                            type="radio"
-                                           name="address"
                                            checked={checkedByPeriod}
                                     />
                                     <div className="textRadioButton">Период</div>
@@ -256,7 +253,6 @@ export const ArchivePage = () => {
                             <div className="radio" onClick={() => handleCheckedByManual()}>
                                 <input className="radioButton"
                                        type="radio"
-                                       name="address"
                                        checked={checkedByManual}
                                 />
                                 <div className="textRadioButton">Указать вручную</div>
@@ -293,8 +289,8 @@ export const ArchivePage = () => {
                     }
                 </div>
                 <div className="flex-column">
-                    <button className="styled-button" onClick={() => showTableDataFrame()}>Показать</button>
-                    <button className="styled-button" onClick={() => clearTableDataFrame()}>Очистить</button>
+                    <button className="styled-button" onClick={showTableDataFrame}>Показать</button>
+                    <button className="styled-button" onClick={clearTableDataFrame}>Очистить</button>
                     <button className="styled-button">Экспорт файл</button>
                 </div>
                 <LoadBar
