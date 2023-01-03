@@ -74,11 +74,13 @@ export const LogPage = () => {
     const handleCheckedByManual = () => {
         setCheckedByManual(true);
         setCheckedByPeriod(false);
+        setTableOffset(0);
     }
 
     const handleCheckedByPeriod = () => {
         setCheckedByManual(false);
         setCheckedByPeriod(true);
+        setTableOffset(0);
     }
     // ------------------------------------
 
@@ -86,6 +88,7 @@ export const LogPage = () => {
     const [periodValue, setPeriodValue] = useState("1");
 
     const handlePeriodValue = (event: { target: { value: SetStateAction<string>; }; }) => {
+        setTableOffset(0);
         setPeriodValue(event.target.value);
     }
     //-------------------
@@ -175,7 +178,6 @@ export const LogPage = () => {
                         data={dataFrame}
                         defaultSortFieldId="date"
                         // pagination
-                        // dense
                         fixedHeaderScrollHeight="90%"
                         responsive
                         subHeaderWrap
@@ -188,10 +190,9 @@ export const LogPage = () => {
             <div className="panelJournal">
                 <div className="container">
                     <div className="flex-row-50">
-                        <div className="radio" onClick={() => handleCheckedByPeriod()}>
+                        <div className="radio" onClick={handleCheckedByPeriod}>
                             <input className="radioButton"
                                 type="radio"
-                                name="address"
                                 checked={checkedByPeriod}
                             />
                             <div className="textRadioButton">Период</div>
@@ -206,10 +207,9 @@ export const LogPage = () => {
                             <option value="744">1 месяц</option>  // 24 * 31
                         </select>
                     </div>
-                    <div className="radio" onClick={() => handleCheckedByManual()}>
+                    <div className="radio" onClick={handleCheckedByManual}>
                         <input className="radioButton"
                             type="radio"
-                            name="address"
                             checked={checkedByManual}
                         />
                         <div className="textRadioButton">Указать вручную</div>
@@ -236,9 +236,15 @@ export const LogPage = () => {
                     </div>
                 </div>
                 <div className="flex-column">
-                    <button className="styled-button" onClick={() => showTableDataFrame()}>Показать</button>
-                    <button className="styled-button" onClick={() => clearTableDataFrame()}>Очистить</button>
-                    <button className="styled-button">Экспорт файл</button>
+                    <button className="styled-button" onClick={showTableDataFrame}>
+                        Показать { tableOffset !== 0 ? "ещё" : "" }
+                    </button>
+                    <button className="styled-button" onClick={clearTableDataFrame}>
+                        Очистить
+                    </button>
+                    <button className="styled-button">
+                        Экспорт файл
+                    </button>
                 </div>
             </div>
         </div>
