@@ -1,5 +1,5 @@
-import { usePproto } from "../pproto/pproto-react";
-import { PprotoConnection, PprotoSubscription } from "../pproto/pproto";
+import {usePproto} from "../pproto/pproto-react";
+import {PprotoConnection, PprotoSubscription} from "../pproto/pproto";
 
 export interface HelloAnswer {
   value: string;
@@ -61,6 +61,19 @@ const nowInt64 = now.getTime()
 const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
 const monthAgoInt64 = monthAgo.getTime();
 
+
+type typeEventLog = {
+  timeRange: {
+    begin: number,
+    end: number
+  },
+  paging: {
+    limit: number,
+    offset: number,
+    total: number
+  }
+};
+
 const TestEventLog = {
   timeRange: {
     begin: monthAgoInt64,
@@ -85,8 +98,28 @@ export class TestService {
     return this.conn.sendCommand(HELLO_COMMAND_TYPE, null, 10);
   }
 
-  async sendEventLog(): Promise<EventLogAnswer> {
-    return this.conn.sendCommand(EVENT_LOG_COMMAND_TYPE, TestEventLog);
+  createEventLogCommandContent(begin: Date, end: Date): typeEventLog {
+    // alert(begin)
+    // alert(end)
+    // alert(begin.getTime())
+    // alert(end.getTime())
+    return {
+      timeRange: {
+        begin: begin.getTime(),
+        end: end.getTime()
+        // begin: begin,
+        // end: end
+      },
+      paging: {
+        limit: 20,
+        offset: 0,
+        total: -1
+      }
+    };
+  }
+  async sendEventLog(begin: Date, end: Date): Promise<EventLogAnswer> {
+    return this.conn.sendCommand(EVENT_LOG_COMMAND_TYPE, this.createEventLogCommandContent(begin, end));
+    // return this.conn.sendCommand(EVENT_LOG_COMMAND_TYPE, TestEventLog);
   }
 
   async sendEventLog2(): Promise<void> {

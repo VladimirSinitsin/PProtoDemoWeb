@@ -1,6 +1,6 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
-import { useEffect, useState } from "react";
-import { useTestService } from "./commands";
+import {SetStateAction, useEffect, useState} from "react";
+import {ItemType, useTestService} from "./commands";
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import { PprotoError } from "../pproto/pproto";
@@ -12,10 +12,10 @@ export const LogPage = () => {
     // Таблица
     // Данные
     const data: DataRow[] = [
-            {
+        {
             id: 1,
             date: "2022-12-19",
-            userId: 12345678901234567890,
+            userId: "12345678901234567890",
             userName: "Синицин Владимир Владимирович",
             description: "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
                 "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
@@ -28,30 +28,32 @@ export const LogPage = () => {
         {
             id: 2,
             date: "2022-12-20",
-            userId: 3,
+            userId: "3",
             userName: "Игнат",
             description: "Нарушение при закрытой печи"
         },
         {
             id: 3,
             date: "2022-12-21",
-            userId: 4,
+            userId: "4",
             userName: "Валерий",
             description: "Выход из системы"
         },
         {
             id: 4,
             date: "2022-12-21",
-            userId: 2,
+            userId: "2",
             userName: "Арсений",
             description: "Вход в систему"
         }
     ];
+    // ---------
+
     // Столбцы
     type DataRow = {
         id: number,
         date: string,
-        userId: number,
+        userId: string,
         userName: string,
         description: string
     };
@@ -61,7 +63,7 @@ export const LogPage = () => {
             name: "Дата",
             selector: row => row.date,
             sortable: true,
-            width: "8rem"
+            width: "11rem"
         },
         {
             name: "Код пользователя",
@@ -83,6 +85,9 @@ export const LogPage = () => {
         }
     ];
 
+    const [dataFrame, setDataFrame] = useState<DataRow[]>([]);
+    // -------
+
     // Настройки таблицы
     const ExpandableRowComponent: React.FC<ExpanderComponentProps<DataRow>> = ({ data }) => {
         return (
@@ -95,13 +100,69 @@ export const LogPage = () => {
             </>
         );
     };
-
+    // ----------
 
     const status = usePprotoStatus();
     const test = useTestService();
-    const [answer, setAnswer] = useState("");
-
     // ----------
+
+    // Период и Указать вручную radioButton
+    const [checkedByPeriod, setCheckedByPeriod] = useState(true);
+    const [checkedByManual, setCheckedByManual] = useState(false);
+
+    const handleCheckedByManual = () => {
+        setCheckedByManual(true);
+        setCheckedByPeriod(false);
+    }
+
+    const handleCheckedByPeriod = () => {
+        setCheckedByManual(false);
+        setCheckedByPeriod(true);
+    }
+    // ------------------------------------
+
+    // Период select
+    const [periodValue, setPeriodValue] = useState("1");
+
+    const handlePeriodValue = (event: { target: { value: SetStateAction<string>; }; }) => {
+        setPeriodValue(event.target.value);
+    }
+    //-------------------
+
+    // Показать
+    const showTableDataFrame = async () => {
+        checkedByPeriod && await requestPeriod();
+        checkedByManual && await requestManual();
+    }
+
+    const requestPeriod = async () => {
+        try {
+            const now = new Date();
+            const begin = new Date(now.setHours(now.getHours() - Number(periodValue)));
+            // (!) после setHours значение в now меняется
+            const r = await test.sendEventLog(begin, new Date());
+            const currDataFrame: DataRow[] = [];
+            r.items.forEach((item, index) => {
+                const dataRow: DataRow = {
+                    id: index,
+                    date: new Date(item.eventTime).toLocaleString(),
+                    userId: item.userSid,
+                    userName: item.userName,
+                    description: item.description
+                };
+                currDataFrame.push(dataRow);
+            });
+            setDataFrame(currDataFrame);
+        } catch (e) {
+            alert(`${e}`);
+        }
+    }
+
+    const requestManual = async () => {
+        alert("abobe");
+    }
+    // --------
+
     return (
         <div className="root">
             <div className="table">
@@ -112,7 +173,7 @@ export const LogPage = () => {
                     <DataTable
                         className="dataTables_wrapper"
                         columns={columns}
-                        data={data}
+                        data={dataFrame}
                         defaultSortFieldId="date"
                         // pagination
                         // dense
@@ -128,31 +189,31 @@ export const LogPage = () => {
             <div className="panelJournal">
                 <div className="container">
                     <div className="flex-row-50">
-                        <div className="radio">
+                        <div className="radio" onClick={() => handleCheckedByPeriod()}>
                             <input className="radioButton"
                                 type="radio"
                                 name="address"
-                                checked={false}
-                                onClick={() => alert("abobe")}
+                                checked={checkedByPeriod}
                             />
-                            <div className="text">Период</div>
+                            <div className="textRadioButton">Период</div>
                         </div>
-                        <select className="select" name="" id="">
+                        <select className="select" name="" id="" onChange={ e => handlePeriodValue(e)}>
                             <option value="1">1 час</option>
                             <option value="4">4 часа</option>
                             <option value="8">8 часов</option>
                             <option value="12">12 часов</option>
                             <option value="24">24 часа</option>
+                            <option value="168">1 неделя</option>  // 24 * 7
+                            <option value="744">1 месяц</option>  // 24 * 31
                         </select>
                     </div>
-                    <div className="radio">
+                    <div className="radio" onClick={() => handleCheckedByManual()}>
                         <input className="radioButton"
                             type="radio"
                             name="address"
-                            checked={false}
-                            onClick={() => alert("abobe")}
+                            checked={checkedByManual}
                         />
-                        <div className="text">Указать вручную</div>
+                        <div className="textRadioButton">Указать вручную</div>
                     </div>
                     <div className="flex-row-50">
                         <div className="text-start-end">Начало</div>
@@ -174,7 +235,7 @@ export const LogPage = () => {
                     </div>
                 </div>
                 <div className="flex-column">
-                    <button className="styled-button">Показать</button>
+                    <button className="styled-button" onClick={() => showTableDataFrame()}>Показать</button>
                     <button className="styled-button">Очистить</button>
                     <button className="styled-button">Экспорт файл</button>
                 </div>
