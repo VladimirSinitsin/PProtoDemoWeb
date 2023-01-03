@@ -66,8 +66,8 @@ export const HomePage = () => {
   const sendEventLog = async () => {
     setAnswer("Loading...");
     try {
-      const r = await test.sendEventLog();
-      setAnswer(JSON.stringify(r, null, 4));
+      // const r = await test.sendEventLog();
+      // setAnswer(JSON.stringify(r, null, 4));
     } catch (e) {
       setAnswer(`${e}`);
     }
