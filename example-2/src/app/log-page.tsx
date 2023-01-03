@@ -103,9 +103,12 @@ export const LogPage = () => {
     // --------------------------
 
     // Показать
+    const [tableOffset, setTableOffset] = useState<number>(0);
+    const [tableLimit, setTableLimit] = useState<number>(15);
     const showTableDataFrame = async () => {
         checkedByPeriod && await requestPeriod();
         checkedByManual && await requestManual();
+        setTableOffset(tableOffset + tableLimit)
     }
 
     const requestPeriod = async () => {
@@ -113,7 +116,7 @@ export const LogPage = () => {
             const now = new Date();
             const begin = new Date(now.setHours(now.getHours() - Number(periodValue)));
             // (!) после setHours значение в now меняется
-            const r = await test.sendEventLog(begin, new Date());
+            const r = await test.sendEventLog(begin, new Date(), tableLimit, tableOffset);
             const currDataFrame: DataRow[] = [];
             r.items.forEach((item, index) => {
                 const dataRow: DataRow = {
@@ -133,7 +136,7 @@ export const LogPage = () => {
 
     const requestManual = async () => {
         try {
-            const r = await test.sendEventLog(manualBeginValue, manualEndValue);
+            const r = await test.sendEventLog(manualBeginValue, manualEndValue, tableLimit, tableOffset);
             const currDataFrame: DataRow[] = [];
             r.items.forEach((item, index) => {
                 const dataRow: DataRow = {
@@ -154,7 +157,8 @@ export const LogPage = () => {
 
     // Очистить
     const clearTableDataFrame = () => {
-        setDataFrame([])
+        setDataFrame([]);
+        setTableOffset(0)
     }
     // --------
 

@@ -98,7 +98,7 @@ export class TestService {
     return this.conn.sendCommand(HELLO_COMMAND_TYPE, null, 10);
   }
 
-  createEventLogCommandContent(begin: Date, end: Date): typeEventLog {
+  createEventLogCommandContent(begin: Date, end: Date, limit: number, offset: number): typeEventLog {
     // alert(begin)
     // alert(end)
     // alert(begin.getTime())
@@ -111,14 +111,14 @@ export class TestService {
         // end: end
       },
       paging: {
-        limit: 20,
-        offset: 0,
+        limit: limit,
+        offset: offset,
         total: -1
       }
     };
   }
-  async sendEventLog(begin: Date, end: Date): Promise<EventLogAnswer> {
-    return this.conn.sendCommand(EVENT_LOG_COMMAND_TYPE, this.createEventLogCommandContent(begin, end));
+  async sendEventLog(begin: Date, end: Date, limit: number=20, offset: number=0): Promise<EventLogAnswer> {
+    return this.conn.sendCommand(EVENT_LOG_COMMAND_TYPE, this.createEventLogCommandContent(begin, end, limit, offset));
     // return this.conn.sendCommand(EVENT_LOG_COMMAND_TYPE, TestEventLog);
   }
 
