@@ -1,10 +1,11 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
 import {SetStateAction, useEffect, useState} from "react";
 import {ItemType, useTestService} from "./commands";
-import { DatePicker } from 'antd';
+import {DatePicker, DatePickerProps} from 'antd';
 import dayjs from 'dayjs';
 import { PprotoError } from "../pproto/pproto";
 import DataTable, { TableColumn, ExpanderComponentProps } from 'react-data-table-component';
+import 'moment/locale/ru';
 
 import './styles.Module.scss';
 
@@ -129,6 +130,18 @@ export const LogPage = () => {
     }
     //-------------------
 
+    // Указать вручную DatePicker
+    const [manualBeginValue, setManualBeginValue] = useState<Date>(new Date());
+    const handleManualBeginValue: DatePickerProps["onChange"] = (date, dateString) => {
+        setManualBeginValue(new Date(dateString));
+    };
+
+    const [manualEndValue, setManualEndValue] = useState<Date>(new Date());
+    const handleManualEndValue: DatePickerProps["onChange"] = (date, dateString) => {
+        setManualEndValue(new Date(dateString));
+    };
+    // --------------------------
+
     // Показать
     const showTableDataFrame = async () => {
         checkedByPeriod && await requestPeriod();
@@ -159,7 +172,23 @@ export const LogPage = () => {
     }
 
     const requestManual = async () => {
-        alert("abobe");
+        try {
+            const r = await test.sendEventLog(manualBeginValue, manualEndValue);
+            const currDataFrame: DataRow[] = [];
+            r.items.forEach((item, index) => {
+                const dataRow: DataRow = {
+                    id: index,
+                    date: new Date(item.eventTime).toLocaleString(),
+                    userId: item.userSid,
+                    userName: item.userName,
+                    description: item.description
+                };
+                currDataFrame.push(dataRow);
+            });
+            setDataFrame(currDataFrame);
+        } catch (e) {
+            alert(`${e}`);
+        }
     }
     // --------
 
@@ -228,6 +257,7 @@ export const LogPage = () => {
                             placeholder="Выберите дату"
                             showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
                             size="small"
+                            onChange={handleManualBeginValue}
                         />
                     </div>
                     <div className="flex-row-50">
@@ -237,6 +267,7 @@ export const LogPage = () => {
                             placeholder="Выберите дату"
                             showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
                             size="small"
+                            onChange={handleManualEndValue}
                         />
                     </div>
                 </div>
