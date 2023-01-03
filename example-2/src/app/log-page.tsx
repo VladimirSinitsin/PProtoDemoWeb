@@ -163,6 +163,12 @@ export const LogPage = () => {
     }
     // --------
 
+    // Очистить
+    const clearTableDataFrame = () => {
+        setDataFrame([])
+    }
+    // --------
+
     return (
         <div className="root">
             <div className="table">
@@ -236,7 +242,7 @@ export const LogPage = () => {
                 </div>
                 <div className="flex-column">
                     <button className="styled-button" onClick={() => showTableDataFrame()}>Показать</button>
-                    <button className="styled-button">Очистить</button>
+                    <button className="styled-button" onClick={() => clearTableDataFrame()}>Очистить</button>
                     <button className="styled-button">Экспорт файл</button>
                 </div>
             </div>
