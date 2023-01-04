@@ -10,76 +10,87 @@ import './styles.Module.scss';
 
 export const ArchivePage = () => {
     // Таблица
-    // Данные
-    const data: DataRow[] = [
-        {
-            id: 1,
-            date: "2022-12-19",
-            userId: 12345678901234567890,
-            userName: "Синицин Владимир Владимирович",
-            description: "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
-                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
-                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
-                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
-                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
-                "Нарушение при открытой печи Нарушение при открытой печи Нарушение при открытой печи " +
-                "Нарушение при открытой печи Нарушение при открытой печи "
-        },
-        {
-            id: 2,
-            date: "2022-12-20",
-            userId: 3,
-            userName: "Игнат",
-            description: "Нарушение при закрытой печи"
-        },
-        {
-            id: 3,
-            date: "2022-12-21",
-            userId: 4,
-            userName: "Валерий",
-            description: "Выход из системы"
-        },
-        {
-            id: 4,
-            date: "2022-12-21",
-            userId: 2,
-            userName: "Арсений",
-            description: "Вход в систему"
-        }
-    ];
     // Столбцы
     type DataRow = {
-        id: number,
-        date: string,
-        userId: number,
-        userName: string,
-        description: string
+        id: number;
+        humanId: number;
+        humanDetect: string;
+        doorIsOpen: string;
+        offenseType: number;
+        overall: number;
+        screen: number;
+        glove: number;
+        boot: number;
+        robe: number;
+        pants: number;
     };
 
     const columns: TableColumn<DataRow>[] = [
         {
-            name: "Дата",
-            selector: row => row.date,
+            name: "Код события",
+            selector: row => row.id,
             sortable: true,
             width: "8rem"
         },
         {
-            name: "Код пользователя",
-            selector: row => row.userId,
+            name: "Код сотрудника",
+            selector: row => row.humanId,
             sortable: true,
-            width: "12rem"
+            width: "9rem"
         },
         {
-            name: "Имя пользователя",
-            selector: row => row.userName,
+            name: "Время события",
+            selector: row => row.humanDetect,
             sortable: true,
-            width: "20rem"
+            width: "11rem"
         },
         {
-            name: "Описание",
-            selector: row => row.description,
+            name: "Положение двери",
+            selector: row => row.doorIsOpen,
             sortable: true,
-            width: "40rem"
+            width: "10rem"
+        },
+        {
+            name: "Тип нарушения",
+            selector: row => row.offenseType,
+            sortable: true,
+            width: "9rem"
+        },
+        {
+            name: "Комбинезон",
+            selector: row => row.overall,
+            sortable: true,
+            width: "8rem"
+        },
+        {
+            name: "Защитный экран",
+            selector: row => row.screen,
+            sortable: true,
+            width: "8rem"
+        },
+        {
+            name: "Перчатки",
+            selector: row => row.glove,
+            sortable: true,
+            width: "7rem"
+        },
+        {
+            name: "Ботинки",
+            selector: row => row.boot,
+            sortable: true,
+            width: "7rem"
+        },
+        {
+            name: "Халат",
+            selector: row => row.robe,
+            sortable: true,
+            width: "6rem"
+        },
+        {
+            name: "Штаны",
+            selector: row => row.pants,
+            sortable: true,
+            width: "6rem"
         }
     ];
 
@@ -90,18 +101,30 @@ export const ArchivePage = () => {
     const ExpandableRowComponent: React.FC<ExpanderComponentProps<DataRow>> = ({data}) => {
         return (
             <>
-                <div className="expandableRowText"><b>ID:</b> {data.id}</div>
-                <div className="expandableRowText"><b>Дата:</b> {data.date}</div>
-                <div className="expandableRowText"><b>Код пользователя:</b> {data.userId}</div>
-                <div className="expandableRowText"><b>Имя пользователя:</b> {data.userName}</div>
-                <div className="expandableRowText"><b>Описание:</b> {data.description}</div>
+                <div className="expandableRowText"><b>Код события:</b> {data.id}</div>
+                <div className="expandableRowText"><b>Код сотрудника:</b> {data.humanId}</div>
+                <div className="expandableRowText"><b>Время события:</b> {data.humanDetect}</div>
+                <div className="expandableRowText"><b>Положение двери:</b> {data.doorIsOpen}</div>
+                <div className="expandableRowText">
+                    <b>Тип нарушения:</b> {
+                    data.offenseType === 0 ? "0 - Нарушение использования СИЗ не найдено" :
+                        data.offenseType === 1 ? "1 - Нарушение использования СИЗ при работе с печью" :
+                            "2 - Нарушение использования СИЗ при перемещении по участку"
+                }
+                </div>
+                <div className="expandableRowText"><b>Комбинезон:</b> {data.overall}</div>
+                <div className="expandableRowText"><b>Защитный экран:</b> {data.screen}</div>
+                <div className="expandableRowText"><b>Перчатки:</b> {data.glove}</div>
+                <div className="expandableRowText"><b>Ботинки:</b> {data.boot}</div>
+                <div className="expandableRowText"><b>Халат:</b> {data.robe}</div>
+                <div className="expandableRowText"><b>Штаны:</b> {data.pants}</div>
             </>
         );
     };
 
 
-    const status = usePprotoStatus();
-    const test = usePprotoService();
+    const pprotoStatus = usePprotoStatus();
+    const pprotoService = usePprotoService();
 
     const [checkedEventsByPeriod, setCheckedEventsByPeriod] = useState(true);
     const [checkedEventsByKey, setCheckedEventsByKey] = useState(false);
@@ -187,11 +210,41 @@ export const ArchivePage = () => {
     const [tableOffset, setTableOffset] = useState<number>(0);
     const [tableLimit, setTableLimit] = useState<number>(15);
     const showTableDataFrame = async () => {
-        // checkedByPeriod && await requestPeriod();
+        checkedByPeriod && await requestPeriod();
         // checkedByManual && await requestManual();
         // checkedEventsByKey && await requestByKey();
         setTableOffset(tableOffset + tableLimit)
     }
+
+    const requestPeriod = async () => {
+        try {
+            const now = new Date();
+            const begin = new Date(now.setHours(now.getHours() - Number(periodValue)));
+            // (!) после setHours значение в now меняется
+            const r = await pprotoService.sendArchiveReq(begin, new Date(), tableLimit, tableOffset);
+            const currDataFrame: DataRow[] = [];
+            r.items.forEach((item, index) => {
+                const dataRow: DataRow = {
+                    id: item.id,
+                    humanId: item.humanId,
+                    humanDetect: new Date(item.humanDetect).toLocaleString(),
+                    doorIsOpen: item.doorIsOpen ? "Открыта" : "Закрыта",
+                    offenseType: item.offenseType,
+                    overall: item.overall,
+                    screen: item.screen,
+                    glove: item.glove,
+                    boot: item.boot,
+                    robe: item.robe,
+                    pants: item.pants,
+                };
+                currDataFrame.push(dataRow);
+            });
+            setDataFrame(currDataFrame);
+        } catch (e) {
+            alert(`${e}`);
+        }
+    }
+
     // --------
 
     // Очистить
@@ -205,7 +258,7 @@ export const ArchivePage = () => {
         <div className="root">
             <div className="table">
                 <div className="Status">
-                    Статус: {status === "connected" ? "Подключено" : "Отключено"}
+                    Статус: {pprotoStatus === "connected" ? "Подключено" : "Отключено"}
                 </div>
                 <div className="resultTable">
                     <DataTable
@@ -301,9 +354,15 @@ export const ArchivePage = () => {
                     }
                 </div>
                 <div className="flex-column">
-                    <button className="styled-button" onClick={showTableDataFrame}>Показать</button>
-                    <button className="styled-button" onClick={clearTableDataFrame}>Очистить</button>
-                    <button className="styled-button">Экспорт файл</button>
+                    <button className="styled-button" onClick={showTableDataFrame}>
+                        Показать { tableOffset !== 0 ? "ещё" : "" }
+                    </button>
+                    <button className="styled-button" onClick={clearTableDataFrame}>
+                        Очистить
+                    </button>
+                    <button className="styled-button">
+                        Экспорт файл
+                    </button>
                 </div>
                 <LoadBar
                     text={"Загрузка видео"}
