@@ -1,10 +1,10 @@
-import { TestMessage, useTestService } from "./commands";
+import { TestMessage, usePprotoService } from "./commands";
 import { v4 as uuid } from "uuid";
 import { useState } from "react";
 import styled from "styled-components";
 
 export const BenchmarkPage = () => {
-  const test = useTestService();
+  const test = usePprotoService();
   const [result, setResult] = useState("");
 
   const run = async () => {

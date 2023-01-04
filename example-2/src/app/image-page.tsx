@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { useRef, useState } from "react";
-import { useTestService } from "./commands";
+import { usePprotoService } from "./commands";
 
 const NUM_IMAGES = 3;
 
 export const ImagePage = () => {
-  const test = useTestService();
+  const test = usePprotoService();
   const index = useRef(-1);
   const [data, setData] = useState("");
 

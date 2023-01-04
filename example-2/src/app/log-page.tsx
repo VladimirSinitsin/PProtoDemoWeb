@@ -1,17 +1,17 @@
-import { usePprotoStatus } from "../pproto/pproto-react";
-import {SetStateAction, useEffect, useState} from "react";
-import {ItemType, useTestService} from "./commands";
-import {DatePicker, DatePickerProps} from 'antd';
-import dayjs from 'dayjs';
-import { PprotoError } from "../pproto/pproto";
-import DataTable, { TableColumn, ExpanderComponentProps } from 'react-data-table-component';
 import 'moment/locale/ru';
+import dayjs from 'dayjs';
+import { SetStateAction, useState } from "react";
+import { DatePicker, DatePickerProps } from 'antd';
+import DataTable, { TableColumn, ExpanderComponentProps } from 'react-data-table-component';
+
+import { usePprotoService } from "./commands";
+import { usePprotoStatus } from "../pproto/pproto-react";
 
 import './styles.Module.scss';
 
 export const LogPage = () => {
-    const status = usePprotoStatus();
-    const test = useTestService();
+    const pprotoStatus = usePprotoStatus();
+    const pprotoService = usePprotoService();
 
     // Таблица
     // Столбцы
@@ -119,11 +119,11 @@ export const LogPage = () => {
             const now = new Date();
             const begin = new Date(now.setHours(now.getHours() - Number(periodValue)));
             // (!) после setHours значение в now меняется
-            const r = await test.sendEventLog(begin, new Date(), tableLimit, tableOffset);
+            const r = await pprotoService.sendLogReq(begin, new Date(), tableLimit, tableOffset);
             const currDataFrame: DataRow[] = [];
             r.items.forEach((item, index) => {
                 const dataRow: DataRow = {
-                    id: index,
+                    id: index + (tableLimit * tableOffset/tableLimit),
                     date: new Date(item.eventTime).toLocaleString(),
                     userId: item.userSid,
                     userName: item.userName,
@@ -139,7 +139,7 @@ export const LogPage = () => {
 
     const requestManual = async () => {
         try {
-            const r = await test.sendEventLog(manualBeginValue, manualEndValue, tableLimit, tableOffset);
+            const r = await pprotoService.sendLogReq(manualBeginValue, manualEndValue, tableLimit, tableOffset);
             const currDataFrame: DataRow[] = [];
             r.items.forEach((item, index) => {
                 const dataRow: DataRow = {
@@ -169,7 +169,7 @@ export const LogPage = () => {
         <div className="root">
             <div className="table">
                 <div className="Status">
-                    Статус: {status === "connected" ? "Подключено" : "Отключено"}
+                    Статус: {pprotoStatus === "connected" ? "Подключено" : "Отключено"}
                 </div>
                 <div className="resultTable">
                     <DataTable

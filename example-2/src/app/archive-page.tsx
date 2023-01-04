@@ -1,6 +1,6 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
 import { SetStateAction, useEffect, useState} from "react";
-import {useTestService} from "./commands";
+import {usePprotoService} from "./commands";
 import {DatePicker, DatePickerProps} from 'antd';
 import dayjs from 'dayjs';
 import {PprotoError} from "../pproto/pproto";
@@ -101,7 +101,7 @@ export const ArchivePage = () => {
 
 
     const status = usePprotoStatus();
-    const test = useTestService();
+    const test = usePprotoService();
 
     const [checkedEventsByPeriod, setCheckedEventsByPeriod] = useState(true);
     const [checkedEventsByKey, setCheckedEventsByKey] = useState(false);
@@ -187,9 +187,9 @@ export const ArchivePage = () => {
     const [tableOffset, setTableOffset] = useState<number>(0);
     const [tableLimit, setTableLimit] = useState<number>(15);
     const showTableDataFrame = async () => {
-        checkedByPeriod && await requestPeriod();
-        checkedByManual && await requestManual();
-        checkedEventsByKey && await requestByKey();
+        // checkedByPeriod && await requestPeriod();
+        // checkedByManual && await requestManual();
+        // checkedEventsByKey && await requestByKey();
         setTableOffset(tableOffset + tableLimit)
     }
     // --------
