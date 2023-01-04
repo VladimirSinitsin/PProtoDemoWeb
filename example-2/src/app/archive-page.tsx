@@ -197,11 +197,13 @@ export const ArchivePage = () => {
     const [manualBeginValue, setManualBeginValue] = useState<Date>(new Date());
     const handleManualBeginValue: DatePickerProps["onChange"] = (date, dateString) => {
         setManualBeginValue(new Date(dateString));
+        setTableOffset(0);
     };
 
     const [manualEndValue, setManualEndValue] = useState<Date>(new Date());
     const handleManualEndValue: DatePickerProps["onChange"] = (date, dateString) => {
         setManualEndValue(new Date(dateString));
+        setTableOffset(0);
     };
     // --------------------------
 
@@ -211,7 +213,7 @@ export const ArchivePage = () => {
     const [tableLimit, setTableLimit] = useState<number>(15);
     const showTableDataFrame = async () => {
         checkedByPeriod && await requestPeriod();
-        // checkedByManual && await requestManual();
+        checkedByManual && await requestManual();
         // checkedEventsByKey && await requestByKey();
         setTableOffset(tableOffset + tableLimit)
     }
@@ -245,6 +247,31 @@ export const ArchivePage = () => {
         }
     }
 
+    const requestManual = async () => {
+        try {
+            const r = await pprotoService.sendArchiveReq(manualBeginValue, manualEndValue, tableLimit, tableOffset);
+            const currDataFrame: DataRow[] = [];
+            r.items.forEach((item, index) => {
+                const dataRow: DataRow = {
+                    id: item.id,
+                    humanId: item.humanId,
+                    humanDetect: new Date(item.humanDetect).toLocaleString(),
+                    doorIsOpen: item.doorIsOpen ? "Открыта" : "Закрыта",
+                    offenseType: item.offenseType,
+                    overall: item.overall,
+                    screen: item.screen,
+                    glove: item.glove,
+                    boot: item.boot,
+                    robe: item.robe,
+                    pants: item.pants,
+                };
+                currDataFrame.push(dataRow);
+            });
+            setDataFrame(currDataFrame);
+        } catch (e) {
+            alert(`${e}`);
+        }
+    }
     // --------
 
     // Очистить
@@ -265,7 +292,7 @@ export const ArchivePage = () => {
                         className="dataTables_wrapper"
                         columns={columns}
                         data={dataFrame}
-                        defaultSortFieldId="date"
+                        defaultSortFieldId="Время события"
                         // pagination
                         fixedHeaderScrollHeight="90%"
                         responsive
