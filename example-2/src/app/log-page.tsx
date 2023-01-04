@@ -97,11 +97,13 @@ export const LogPage = () => {
     const [manualBeginValue, setManualBeginValue] = useState<Date>(new Date());
     const handleManualBeginValue: DatePickerProps["onChange"] = (date, dateString) => {
         setManualBeginValue(new Date(dateString));
+        setTableOffset(0);
     };
 
     const [manualEndValue, setManualEndValue] = useState<Date>(new Date());
     const handleManualEndValue: DatePickerProps["onChange"] = (date, dateString) => {
         setManualEndValue(new Date(dateString));
+        setTableOffset(0);
     };
     // --------------------------
 
@@ -176,7 +178,7 @@ export const LogPage = () => {
                         className="dataTables_wrapper"
                         columns={columns}
                         data={dataFrame}
-                        defaultSortFieldId="date"
+                        defaultSortFieldId="Дата"
                         // pagination
                         fixedHeaderScrollHeight="90%"
                         responsive
