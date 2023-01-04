@@ -99,16 +99,10 @@ export class TestService {
   }
 
   createEventLogCommandContent(begin: Date, end: Date, limit: number, offset: number): typeEventLog {
-    // alert(begin)
-    // alert(end)
-    // alert(begin.getTime())
-    // alert(end.getTime())
     return {
       timeRange: {
         begin: begin.getTime(),
         end: end.getTime()
-        // begin: begin,
-        // end: end
       },
       paging: {
         limit: limit,
