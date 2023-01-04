@@ -117,6 +117,11 @@ class PprotoService {
     // return this.conn.sendCommand(LOG_COMMAND_TYPE, TestReq);
   }
 
+  async sendArchiveReq(begin: Date, end: Date, limit: number=20, offset: number=0): Promise<ArchiveAnswerType> {
+    return this.conn.sendCommand(ARCHIVE_COMMAND_TYPE, this.createArchiveCommandContent(begin, end, limit, offset));
+    // return this.conn.sendCommand(ARCHIVE_COMMAND_TYPE, TestReq);
+  }
+
   // (?) скорее всего надо сделать ассинхронной -> добавить промис в возвращаемый тип
   createLogCommandContent(begin: Date, end: Date, limit: number, offset: number): LogReqType {
     return {
@@ -132,8 +137,18 @@ class PprotoService {
     };
   }
 
-  async sendArchiveReq(begin: Date, end: Date, limit: number=20, offset: number=0): Promise<ArchiveAnswerType> {
-    return this.conn.sendCommand(ARCHIVE_COMMAND_TYPE, TestReq);
+  createArchiveCommandContent(begin: Date, end: Date, limit: number, offset: number): ArchiveReqType {
+    return {
+      timeRange: {
+        begin: begin.getTime(),
+        end: end.getTime()
+      },
+      paging: {
+        limit: limit,
+        offset: offset,
+        total: -1
+      }
+    };
   }
 }
 // ------------------------------
