@@ -24,18 +24,28 @@ export const HomePage = () => {
   };
   // -------------
 
-  // ArchiveTest
+  // ArchiveTests
   const sendTestArchive = async () => {
     setAnswer("Loading...");
     try {
         const begin = new Date("2022-12-01");
         const end = new Date("2022-12-31");
-        const r = await test.sendArchiveReq(begin, end);
+        const r = await test.sendArchiveReq({begin: begin, end: end});
         setAnswer(JSON.stringify(r, null, 4));
     } catch (e) {
         setAnswer(`${e}`);
     }
   };
+
+    const sendTestArchiveByKey = async () => {
+        setAnswer("Loading...");
+        try {
+            const r = await test.sendArchiveReq({archiveId: "154972f2%"});
+            setAnswer(JSON.stringify(r, null, 4));
+        } catch (e) {
+            setAnswer(`${e}`);
+        }
+    };
   // -------------
 
   return (
@@ -45,6 +55,7 @@ export const HomePage = () => {
       </Status>
       <CommandButton onClick={sendTestLog}>Send test Log</CommandButton>
       <CommandButton onClick={sendTestArchive}>Send test Archive</CommandButton>
+      <CommandButton onClick={sendTestArchiveByKey}>Send test ArchiveByKey</CommandButton>
       <label>
         Ответ от сервера
         <ResultTextArea readOnly value={answer} />
