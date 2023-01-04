@@ -50,14 +50,15 @@ interface ItemLogType {
 // Интерфейс для запроса Архив нарушений
 interface ArchiveReqType {
   timeRange: {
-    begin: number,
-    end: number
+    begin: number | undefined,
+    end: number | undefined
   },
   paging: {
     limit: number,
     offset: number,
     total: number
-  }
+  },
+  archiveId: string | undefined
 }
 // -------------------------------------
 
@@ -117,8 +118,19 @@ class PprotoService {
     // return this.conn.sendCommand(LOG_COMMAND_TYPE, TestReq);
   }
 
-  async sendArchiveReq(begin: Date, end: Date, limit: number=20, offset: number=0): Promise<ArchiveAnswerType> {
-    return this.conn.sendCommand(ARCHIVE_COMMAND_TYPE, this.createArchiveCommandContent(begin, end, limit, offset));
+  async sendArchiveReq(options: {
+    archiveId?: string,
+    limit?: number,
+    offset?: number,
+    begin?: Date,
+    end?: Date,
+  }):
+      Promise<ArchiveAnswerType>
+  {
+    return this.conn.sendCommand(
+        ARCHIVE_COMMAND_TYPE,
+        this.createArchiveCommandContent(options.begin, options.end, options.limit, options.offset, options.archiveId)
+    );
     // return this.conn.sendCommand(ARCHIVE_COMMAND_TYPE, TestReq);
   }
 
@@ -137,17 +149,24 @@ class PprotoService {
     };
   }
 
-  createArchiveCommandContent(begin: Date, end: Date, limit: number, offset: number): ArchiveReqType {
+  createArchiveCommandContent(
+      begin: Date | undefined,
+      end: Date | undefined,
+      limit: number | undefined,
+      offset: number | undefined,
+      archiveId: string | undefined
+  ): ArchiveReqType {
     return {
       timeRange: {
-        begin: begin.getTime(),
-        end: end.getTime()
+        begin: begin !== undefined ? begin.getTime() : begin,
+        end: end !== undefined ? end.getTime() : end
       },
       paging: {
-        limit: limit,
-        offset: offset,
+        limit: limit !== undefined ? limit : 20,
+        offset: offset !== undefined ? offset : 0,
         total: -1
-      }
+      },
+      archiveId: archiveId
     };
   }
 }
