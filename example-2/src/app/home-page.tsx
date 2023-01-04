@@ -1,94 +1,41 @@
 import { usePprotoStatus } from "../pproto/pproto-react";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { useTestService } from "./commands";
+import { usePprotoService } from "./commands";
 import { PprotoError } from "../pproto/pproto";
 
 export const HomePage = () => {
   const status = usePprotoStatus();
-  const test = useTestService();
+  const test = usePprotoService();
   const [answer, setAnswer] = useState("");
 
-  // Hello command
 
-  const sendHello = async () => {
+  // LogTest
+  const sendTestLog = async () => {
     setAnswer("Loading...");
     try {
-      const r = await test.sendHello();
+      const begin = new Date("2022-12-01");
+      const end = new Date("2022-12-31");
+      const r = await test.sendLogReq(begin, end);
       setAnswer(JSON.stringify(r, null, 4));
     } catch (e) {
       setAnswer(`${e}`);
     }
   };
-
-  // Error command
-
-  const sendError = async () => {
-    setAnswer("Loading...");
-    try {
-      await test.sendError();
-    } catch (e) {
-      if (e instanceof PprotoError) {
-        const errorObj = {
-          group: e.group,
-          code: e.code,
-          description: e.description,
-        };
-        setAnswer(JSON.stringify(errorObj, null, 4));
-      } else {
-        setAnswer(`${e}`);
-      }
-    }
-  };
-
-  // Event command
-
-  const sendEvent = async () => {
-    setAnswer("Loading...");
-    try {
-      await test.sendEvent();
-    } catch (e) {
-      setAnswer(JSON.stringify(e, null, 4));
-    }
-  };
-
-  useEffect(() => {
-    const sub = test.onEvent((e) => {
-      setAnswer(JSON.stringify(e, null, 4));
-    });
-    return () => sub.unsubscribe();
-  });
-
   // -------------
 
-  // EventLogTests
-
-  const sendEventLog = async () => {
+  // ArchiveTest
+  const sendTestArchive = async () => {
     setAnswer("Loading...");
     try {
-      // const r = await test.sendEventLog();
-      // setAnswer(JSON.stringify(r, null, 4));
+        const begin = new Date("2022-12-01");
+        const end = new Date("2022-12-31");
+        const r = await test.sendArchiveReq(begin, end);
+        setAnswer(JSON.stringify(r, null, 4));
     } catch (e) {
-      setAnswer(`${e}`);
+        setAnswer(`${e}`);
     }
   };
-
-  const sendEventLog2 = async () => {
-    setAnswer("Loading...");
-    try {
-      await test.sendEventLog2();
-    } catch (e) {
-      setAnswer(JSON.stringify(e, null, 4));
-    }
-  };
-
-  useEffect(() => {
-    const sub = test.onEventLog((e) => {
-      setAnswer(JSON.stringify(e, null, 4));
-    });
-    return () => sub.unsubscribe();
-  });
-
   // -------------
 
   return (
@@ -96,9 +43,8 @@ export const HomePage = () => {
       <Status>
         Статус: {status === "connected" ? "Подключено" : "Отключено"}
       </Status>
-      <CommandButton onClick={sendEventLog}>Send hello</CommandButton>
-      <CommandButton onClick={sendError}>Send error</CommandButton>
-      <CommandButton onClick={sendEventLog2}>Send event</CommandButton>
+      <CommandButton onClick={sendTestLog}>Send test Log</CommandButton>
+      <CommandButton onClick={sendTestArchive}>Send test Archive</CommandButton>
       <label>
         Ответ от сервера
         <ResultTextArea readOnly value={answer} />
