@@ -124,6 +124,7 @@ export const ArchivePage = () => {
         );
     }
 
+    // Поиск событий за период и Поиск события по ключу radioButton
     const handleCheckedEventsByKey = () => {
         setCheckedEventsByKey(true);
         setCheckedEventsByPeriod(false);
@@ -134,11 +135,14 @@ export const ArchivePage = () => {
         setCheckedEventsByPeriod(true);
         // alert(checkedEventsByPeriod)
     }
+    // -----------------------------------------------------------
 
+    // handler для Код события
     const handleInput = (event: { target: { value: SetStateAction<string>; }; }) => {
         setText(event.target.value);
         // console.log(event.target.value);
     }
+    // ----------------------
 
     // Период и Указать вручную radioButton
     const [checkedByPeriod, setCheckedByPeriod] = useState(true);
@@ -147,11 +151,13 @@ export const ArchivePage = () => {
     const handleCheckedByManual = () => {
         setCheckedByManual(true);
         setCheckedByPeriod(false);
+        setTableOffset(0);
     }
 
     const handleCheckedByPeriod = () => {
         setCheckedByManual(false);
         setCheckedByPeriod(true);
+        setTableOffset(0);
     }
     // ------------------------------------
 
@@ -159,6 +165,7 @@ export const ArchivePage = () => {
     const [periodValue, setPeriodValue] = useState("1");
 
     const handlePeriodValue = (event: { target: { value: SetStateAction<string>; }; }) => {
+        setTableOffset(0);
         setPeriodValue(event.target.value);
     }
     //-------------------
@@ -177,14 +184,20 @@ export const ArchivePage = () => {
 
 
     // Показать
+    const [tableOffset, setTableOffset] = useState<number>(0);
+    const [tableLimit, setTableLimit] = useState<number>(15);
     const showTableDataFrame = async () => {
-        setDataFrame(data)
+        checkedByPeriod && await requestPeriod();
+        checkedByManual && await requestManual();
+        checkedEventsByKey && await requestByKey();
+        setTableOffset(tableOffset + tableLimit)
     }
     // --------
 
     // Очистить
     const clearTableDataFrame = () => {
         setDataFrame([])
+        setTableOffset(0)
     }
     // --------
 
@@ -201,7 +214,6 @@ export const ArchivePage = () => {
                         data={dataFrame}
                         defaultSortFieldId="date"
                         // pagination
-                        // dense
                         fixedHeaderScrollHeight="90%"
                         responsive
                         subHeaderWrap
@@ -214,14 +226,14 @@ export const ArchivePage = () => {
             <div className="panelArchive">
                 <div className="text">События</div>
                 <div className="container">
-                    <div className="radio" onClick={() => handleCheckedEventsByPeriod()}>
+                    <div className="radio" onClick={handleCheckedEventsByPeriod}>
                         <input className="radioButton"
                                type="radio"
                                checked={checkedEventsByPeriod}
                         />
                         <div className="textRadioButton">Поиск событий за период</div>
                     </div>
-                    <div className="radio" onClick={() => handleCheckedEventsByKey()}>
+                    <div className="radio" onClick={handleCheckedEventsByKey}>
                         <input className="radioButton"
                                type="radio"
                                checked={checkedEventsByKey}
@@ -233,14 +245,14 @@ export const ArchivePage = () => {
                     { checkedEventsByPeriod &&
                         <>
                             <div className="flex-row-50">
-                                <div className="radio" onClick={() => handleCheckedByPeriod()}>
+                                <div className="radio" onClick={handleCheckedByPeriod}>
                                     <input className="radioButton"
                                            type="radio"
                                            checked={checkedByPeriod}
                                     />
                                     <div className="textRadioButton">Период</div>
                                 </div>
-                                <select className="select" name="" id="" onChange={ e => handlePeriodValue(e)}>
+                                <select className="select" onChange={ e => handlePeriodValue(e)}>
                                     <option value="1">1 час</option>
                                     <option value="4">4 часа</option>
                                     <option value="8">8 часов</option>
@@ -250,7 +262,7 @@ export const ArchivePage = () => {
                                     <option value="744">1 месяц</option>  // 24 * 31
                                 </select>
                             </div>
-                            <div className="radio" onClick={() => handleCheckedByManual()}>
+                            <div className="radio" onClick={handleCheckedByManual}>
                                 <input className="radioButton"
                                        type="radio"
                                        checked={checkedByManual}
