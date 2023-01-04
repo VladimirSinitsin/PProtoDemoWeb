@@ -131,7 +131,7 @@ export const ArchivePage = () => {
 
     const [percentValue, setPercentValue] = useState(80);
 
-    const [text, setText] = useState("");
+    const [keyText, setKeyText] = useState("");
 
     const LoadBar = ({text = "Загрузка видео", percent = 40}) => {
         const style = {
@@ -151,6 +151,9 @@ export const ArchivePage = () => {
     const handleCheckedEventsByKey = () => {
         setCheckedEventsByKey(true);
         setCheckedEventsByPeriod(false);
+        setCheckedByManual(false);
+        setCheckedByPeriod(false);
+        setTableOffset(0);
     }
 
     const handleCheckedEventsByPeriod = () => {
@@ -162,7 +165,7 @@ export const ArchivePage = () => {
 
     // handler для Код события
     const handleInput = (event: { target: { value: SetStateAction<string>; }; }) => {
-        setText(event.target.value);
+        setKeyText(event.target.value);
         // console.log(event.target.value);
     }
     // ----------------------
@@ -214,7 +217,7 @@ export const ArchivePage = () => {
     const showTableDataFrame = async () => {
         checkedByPeriod && await requestPeriod();
         checkedByManual && await requestManual();
-        // checkedEventsByKey && await requestByKey();
+        checkedEventsByKey && await requestByKey();
         setTableOffset(tableOffset + tableLimit)
     }
 
@@ -223,7 +226,9 @@ export const ArchivePage = () => {
             const now = new Date();
             const begin = new Date(now.setHours(now.getHours() - Number(periodValue)));
             // (!) после setHours значение в now меняется
-            const r = await pprotoService.sendArchiveReq(begin, new Date(), tableLimit, tableOffset);
+            const r = await pprotoService.sendArchiveReq({
+                begin: begin, end: new Date(), limit: tableLimit, offset: tableOffset
+            });
             const currDataFrame: DataRow[] = [];
             r.items.forEach((item, index) => {
                 const dataRow: DataRow = {
@@ -249,9 +254,37 @@ export const ArchivePage = () => {
 
     const requestManual = async () => {
         try {
-            const r = await pprotoService.sendArchiveReq(manualBeginValue, manualEndValue, tableLimit, tableOffset);
+            const r = await pprotoService.sendArchiveReq({
+                begin: manualBeginValue, end: manualEndValue, limit: tableLimit, offset: tableOffset
+            });
             const currDataFrame: DataRow[] = [];
             r.items.forEach((item, index) => {
+                const dataRow: DataRow = {
+                    id: item.id,
+                    humanId: item.humanId,
+                    humanDetect: new Date(item.humanDetect).toLocaleString(),
+                    doorIsOpen: item.doorIsOpen ? "Открыта" : "Закрыта",
+                    offenseType: item.offenseType,
+                    overall: item.overall,
+                    screen: item.screen,
+                    glove: item.glove,
+                    boot: item.boot,
+                    robe: item.robe,
+                    pants: item.pants,
+                };
+                currDataFrame.push(dataRow);
+            });
+            setDataFrame(currDataFrame);
+        } catch (e) {
+            alert(`${e}`);
+        }
+    }
+
+    const requestByKey = async () => {
+        try {
+            const r = await pprotoService.sendArchiveReq({archiveId: keyText + "%"});
+            const currDataFrame: DataRow[] = [];
+            r.items.forEach((item) => {
                 const dataRow: DataRow = {
                     id: item.id,
                     humanId: item.humanId,
