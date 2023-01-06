@@ -16,13 +16,13 @@ export const ArchivePage = () => {
         humanId: number;
         humanDetect: string;
         doorIsOpen: string;
-        offenseType: number;
-        overall: number;
-        screen: number;
-        glove: number;
-        boot: number;
-        robe: number;
-        pants: number;
+        offenseType: string;
+        overall: string;
+        screen: string;
+        glove: string;
+        boot: string;
+        robe: string;
+        pants: string;
     };
 
     const columns: TableColumn<DataRow>[] = [
@@ -66,7 +66,7 @@ export const ArchivePage = () => {
             name: "Защитный экран",
             selector: row => row.screen,
             sortable: true,
-            width: "8rem"
+            width: "7rem"
         },
         {
             name: "Перчатки",
@@ -78,7 +78,7 @@ export const ArchivePage = () => {
             name: "Ботинки",
             selector: row => row.boot,
             sortable: true,
-            width: "7rem"
+            width: "6rem"
         },
         {
             name: "Халат",
@@ -107,9 +107,12 @@ export const ArchivePage = () => {
                 <div className="expandableRowText"><b>Положение двери:</b> {data.doorIsOpen}</div>
                 <div className="expandableRowText">
                     <b>Тип нарушения:</b> {
-                    data.offenseType === 0 ? "0 - Нарушение использования СИЗ не найдено" :
-                        data.offenseType === 1 ? "1 - Нарушение использования СИЗ при работе с печью" :
-                            "2 - Нарушение использования СИЗ при перемещении по участку"
+                    // data.offenseType === 0 ? "0 - Нарушение использования СИЗ не найдено" :
+                    //     data.offenseType === 1 ? "1 - Нарушение использования СИЗ при работе с печью" :
+                    //         "2 - Нарушение использования СИЗ при перемещении по участку"
+                    data.offenseType === "Нахождение в зоне" ? "Нарушение использования СИЗ при перемещении по участку" :
+                    data.offenseType === "Работа с печью" ? "Нарушение использования СИЗ при работе с печью" :
+                    "Нарушение использования СИЗ не найдено"
                 }
                 </div>
                 <div className="expandableRowText"><b>Комбинезон:</b> {data.overall}</div>
@@ -236,13 +239,13 @@ export const ArchivePage = () => {
                     humanId: item.humanId,
                     humanDetect: new Date(item.humanDetect).toLocaleString(),
                     doorIsOpen: item.doorIsOpen ? "Открыта" : "Закрыта",
-                    offenseType: item.offenseType,
-                    overall: item.overall,
-                    screen: item.screen,
-                    glove: item.glove,
-                    boot: item.boot,
-                    robe: item.robe,
-                    pants: item.pants,
+                    offenseType: item.offenseType === 2 ? "Нахождение в зоне" : item.offenseType === 1 ? "Работа с печью" : "Не выявлено",
+                    overall: item.overall === 0 ? "Нет" : "Есть",
+                    screen: item.screen === 0 ? "Нет" : "Есть",
+                    glove: item.glove === 0 ? "Нет" : "Есть",
+                    boot: item.boot === 0 ? "Нет" : "Есть",
+                    robe: item.robe === 0 ? "Нет" : "Есть",
+                    pants: item.pants === 0 ? "Нет" : "Есть",
                 };
                 currDataFrame.push(dataRow);
             });
@@ -264,13 +267,13 @@ export const ArchivePage = () => {
                     humanId: item.humanId,
                     humanDetect: new Date(item.humanDetect).toLocaleString(),
                     doorIsOpen: item.doorIsOpen ? "Открыта" : "Закрыта",
-                    offenseType: item.offenseType,
-                    overall: item.overall,
-                    screen: item.screen,
-                    glove: item.glove,
-                    boot: item.boot,
-                    robe: item.robe,
-                    pants: item.pants,
+                    offenseType: item.offenseType === 2 ? "Нахождение в зоне" : item.offenseType === 1 ? "Работа с печью" : "Не выявлено",
+                    overall: item.overall === 0 ? "Нет" : "Есть",
+                    screen: item.screen === 0 ? "Нет" : "Есть",
+                    glove: item.glove === 0 ? "Нет" : "Есть",
+                    boot: item.boot === 0 ? "Нет" : "Есть",
+                    robe: item.robe === 0 ? "Нет" : "Есть",
+                    pants: item.pants === 0 ? "Нет" : "Есть",
                 };
                 currDataFrame.push(dataRow);
             });
@@ -290,13 +293,13 @@ export const ArchivePage = () => {
                     humanId: item.humanId,
                     humanDetect: new Date(item.humanDetect).toLocaleString(),
                     doorIsOpen: item.doorIsOpen ? "Открыта" : "Закрыта",
-                    offenseType: item.offenseType,
-                    overall: item.overall,
-                    screen: item.screen,
-                    glove: item.glove,
-                    boot: item.boot,
-                    robe: item.robe,
-                    pants: item.pants,
+                    offenseType: item.offenseType === 2 ? "Нахождение в зоне" : item.offenseType === 1 ? "Работа с печью" : "Не выявлено",
+                    overall: item.overall === 0 ? "Нет" : "Есть",
+                    screen: item.screen === 0 ? "Нет" : "Есть",
+                    glove: item.glove === 0 ? "Нет" : "Есть",
+                    boot: item.boot === 0 ? "Нет" : "Есть",
+                    robe: item.robe === 0 ? "Нет" : "Есть",
+                    pants: item.pants === 0 ? "Нет" : "Есть",
                 };
                 currDataFrame.push(dataRow);
             });
