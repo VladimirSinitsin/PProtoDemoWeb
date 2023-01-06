@@ -1,16 +1,16 @@
 import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
 import { HomePage } from "./home-page";
 import styled from "styled-components";
-import { PropsWithChildren } from "react";
+import {PropsWithChildren, ReactNode} from "react";
 import { ArchivePage } from "./archive-page";
 import { LogPage } from "./log-page";
 import { BenchmarkPage } from "./benchmark-page";
 import { ImagePage } from "./image-page";
 
-
 export const AppRoutes = () => {
   return (
     <BrowserRouter>
+    <MainHtml>
       <Links>
         <StyledLink to={"/"}>Видео</StyledLink>
         <StyledLink to={"/archive"}>Архив нарушений</StyledLink>
@@ -25,9 +25,14 @@ export const AppRoutes = () => {
         {/*<Route path={"/image"} element={<ImagePage />} />*/}
         {/*<Route path={"/benchmark"} element={<BenchmarkPage />} />*/}
       </Routes>
+    </MainHtml>
     </BrowserRouter>
   );
 };
+
+const MainHtml = styled.div`
+  margin-left: calc(100vw - 100%)
+`
 
 const Links = styled.div`
   display: flex;
