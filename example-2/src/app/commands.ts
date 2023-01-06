@@ -95,12 +95,15 @@ const TestReq = {
   timeRange: {
     begin: monthAgoInt64,
     end: nowInt64
+    // begin: 0,
+    // end: 0
   },
   paging: {
     limit: 20,
     offset: 0,
     total: -1
-  }
+  },
+  // archiveId: "154972f2%"
 };
 // -----------------------------
 
@@ -158,8 +161,9 @@ class PprotoService {
   ): ArchiveReqType {
     return {
       timeRange: {
-        begin: begin !== undefined ? begin.getTime() : begin,
-        end: end !== undefined ? end.getTime() : end
+        // Пока есть ошибка в либе на c++ - 0, потом поменять на begin/end (undefined)
+        begin: begin !== undefined ? begin.getTime() : 0,
+        end: end !== undefined ? end.getTime() : 0
       },
       paging: {
         limit: limit !== undefined ? limit : 20,
